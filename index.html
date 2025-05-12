@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <title>PlasWave Beta</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Umami Tracking Script -->
+  <script defer src="https://umami-production-090f.up.railway.app/script.js" data-website-id="6bc87130-4495-4f97-b20b-a293360c13bb"></script>
+
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
@@ -28,18 +32,19 @@
     <p>💡 PlasWave is an independent project, not currently affiliated with any health agency. For official eligibility & health info, visit the center websites.</p>
   </footer>
 
-  <!-- Location & Eligibility Modals -->
+  <!-- Location Modal -->
   <div id="locationModal" class="modal-overlay">
     <div class="modal-content">
-      <h2> Allow Location Access</h2>
+      <h2>Allow Location Access</h2>
       <p>PlasWave uses your location to find nearby donation centers. This helps us show you real-time incentives near you.</p>
       <button id="allowLocationBtn">Allow Location Access</button>
     </div>
   </div>
 
+  <!-- Questionnaire Modal -->
   <div id="questionnaireModal" class="modal-overlay hidden">
     <div class="modal-content">
-      <h2> Quick Eligibility Check</h2>
+      <h2>Quick Eligibility Check</h2>
       <form id="eligibilityForm">
         <label>Are you 18 years old, or older?
           <select required><option value="">--</option><option value="yes">Yes</option><option value="no">No</option></select>
@@ -80,10 +85,11 @@
     </div>
   </div>
 
-  <!-- Scripts -->
+  <!-- Core Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="script.js"></script>
 
+  <!-- Quick Interactive Setup -->
   <script>
     // Location permission
     document.getElementById("allowLocationBtn").addEventListener("click", () => {
@@ -138,17 +144,15 @@
 
     // Admin Stats Logic
 
-    // Hidden button appears after secret keypress: Ctrl + Alt + P
     document.addEventListener("keydown", (e) => {
       if (e.ctrlKey && e.altKey && e.key === "p") {
         document.getElementById("adminStatsBtn").classList.remove("hidden");
       }
     });
 
-    // Clicking admin button prompts for password
     document.getElementById("adminStatsBtn").addEventListener("click", () => {
       const password = prompt("Enter admin password:");
-      if (password === "plaswave2025") { // you can change this password!
+      if (password === "plaswave2025") {
         updateStatsDashboard();
         document.getElementById("adminStatsModal").classList.remove("hidden");
       } else {
@@ -156,7 +160,6 @@
       }
     });
 
-    // Dummy function for stats (you'll connect this in script.js fully)
     function updateStatsDashboard() {
       const visits = localStorage.getItem('plaswave_visits') || 0;
       const pins = localStorage.getItem('plaswave_pinClicks') || 0;
