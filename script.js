@@ -2,7 +2,6 @@ let plasmaData = [];
 let centerMarkers = [];
 
 // === Initialize Leaflet map ===
-console.log("Initializing map...");
 const map = L.map('map').setView([38.89511, -77.03637], 11);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -19,11 +18,58 @@ const customGreenPin = L.icon({
   shadowSize: [41, 41]
 });
 
+// === Ask for Geolocation Permission (Mobile-safe) ===
+const allowLocationBtn = document.getElementById("allowLocationBtn");
+if (allowLocationBtn) {
+  allowLocationBtn.addEventListener("click", () => {
+    document.getElementById("locationModal").classList.add("hidden");
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          const userLat = pos.coords.latitude;
+          const userLon = pos.coords.longitude;
+
+          map.setView([userLat, userLon], 13);
+
+          L.circleMarker([userLat, userLon], {
+            radius: 8,
+            fillColor: "#FFD700",
+            color: "#000",
+            weight: 2,
+            fillOpacity: 1
+          }).addTo(map)
+            .bindPopup("📍 You are here")
+            .bringToFront();
+
+          document.getElementById("questionnaireModal").classList.remove("hidden");
+        },
+        err => {
+          console.warn("Geolocation failed:", err);
+          alert("We couldn't access your location. You can still explore centers manually.");
+          document.getElementById("questionnaireModal").classList.remove("hidden");
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+      );
+    }
+  });
+}
+
+// === Optional IP fallback (commented out to avoid 403 error unless token provided) ===
+// fetch("https://ipinfo.io/json?token=YOUR_TOKEN_HERE")
+//   .then(res => res.json())
+//   .then(location => {
+//     const [lat, lon] = location.loc.split(',');
+//     map.setView([parseFloat(lat), parseFloat(lon)], 11);
+//   })
+//   .catch(() => {
+//     console.warn("IP geolocation failed, using DC default.");
+//   });
+
 // === Load Center Data ===
 fetch("dmv_plasma_centers.json")
   .then(response => response.json())
   .then(data => {
-    console.log("Center data loaded.");
     plasmaData = data;
     renderCenters(plasmaData);
   })
@@ -47,7 +93,7 @@ function renderCenters(data, minIncentive = 0) {
         <em>${center.incentive}</em><br/>
         <a href="${center.signup}" target="_blank" onclick="trackUrlClick()">Sign Up</a>
       `);
-      marker.on('click', trackPinClick);
+      marker.on('click', trackPinClick); // track pin clicks
       centerMarkers.push(marker);
     }
   });
@@ -59,100 +105,6 @@ if (filterDropdown) {
   filterDropdown.addEventListener("change", (e) => {
     const min = parseInt(e.target.value) || 0;
     renderCenters(plasmaData, min);
-  });
-}
-
-// === Location Access Button ===
-const allowLocationBtn = document.getElementById("allowLocationBtn");
-
-if (allowLocationBtn) {
-  allowLocationBtn.addEventListener("click", () => {
-    console.log("Location button clicked");
-    const locationModal = document.getElementById("locationModal");
-    locationModal.classList.add("hidden");
-
-    localStorage.setItem('plaswave_sessionStarted', 'true');
-
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        position => {
-          console.log("Location success");
-          const userLat = position.coords.latitude;
-          const userLon = position.coords.longitude;
-          map.setView([userLat, userLon], 13);
-
-          L.circleMarker([userLat, userLon], {
-            radius: 8,
-            fillColor: "#FFD700",
-            color: "#000",
-            weight: 2,
-            fillOpacity: 1
-          }).addTo(map)
-            .bindPopup("📍 You are here")
-            .openPopup()
-            .bringToFront();
-
-          openQuestionnaire();
-        },
-        error => {
-          console.warn("Location failed", error);
-          alert("We couldn't access your location. You can still browse centers manually!");
-          openQuestionnaire();
-        },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
-      );
-    } else {
-      alert("Geolocation not supported. Proceeding manually.");
-      openQuestionnaire();
-    }
-  });
-}
-
-// === Open Questionnaire Modal ===
-function openQuestionnaire() {
-  console.log("Attempting to open questionnaire...");
-
-  if (localStorage.getItem('plaswave_sessionStarted') !== 'true') {
-    console.log("Session not started - blocking questionnaire.");
-    return;
-  }
-  if (localStorage.getItem('plaswave_questionnaireShown') === 'true') {
-    console.log("Questionnaire already shown - blocking.");
-    return;
-  }
-
-  const locationModal = document.getElementById("locationModal");
-  if (locationModal && !locationModal.classList.contains('hidden')) {
-    locationModal.classList.add("hidden");
-  }
-
-  const qModal = document.getElementById("questionnaireModal");
-  if (qModal) {
-    qModal.classList.remove("hidden");
-    console.log("Questionnaire shown.");
-  }
-
-  localStorage.setItem('plaswave_questionnaireShown', 'true');
-}
-
-// === Eligibility Form ===
-const eligibilityForm = document.getElementById("eligibilityForm");
-
-if (eligibilityForm) {
-  eligibilityForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    console.log("Eligibility form submitted.");
-
-    const selects = e.target.querySelectorAll("select");
-    const answers = Array.from(selects).map(sel => sel.value);
-
-    if (answers[0] === "yes" && answers[1] === "yes" && answers[2] === "no") {
-      alert("Great! You're likely eligible to donate. Let's find you a center.");
-    } else {
-      alert("You may not currently be eligible to donate plasma. Please check with a donation center for full guidelines.");
-    }
-
-    document.getElementById("questionnaireModal").classList.add("hidden");
   });
 }
 
@@ -204,16 +156,13 @@ function trackUrlClick() {
   }
 }
 
-// === 🚀 Secret Admin Activation (Ctrl+Alt+P) ✅ Updated ===
+// === 🚀 Secret Admin Activation (Fixed) ===
 document.addEventListener("keydown", (e) => {
+  console.log(`Key pressed: ${e.key}, ctrl: ${e.ctrlKey}, alt: ${e.altKey}`);
   if (e.ctrlKey && e.altKey && e.key.toLowerCase() === "p") {
     const adminBtn = document.getElementById("adminStatsBtn");
     if (adminBtn) {
       adminBtn.classList.remove("hidden");
-      adminBtn.style.display = 'block';
-      adminBtn.style.visibility = 'visible';
-      adminBtn.style.opacity = '1';
-      console.log("Admin Mode Activated! 📈");
       alert("Admin Mode Activated! 📈");
     }
   }
@@ -224,7 +173,7 @@ const adminStatsBtn = document.getElementById("adminStatsBtn");
 if (adminStatsBtn) {
   adminStatsBtn.addEventListener("click", () => {
     const password = prompt("Enter admin password:");
-    if (password === "plaswave2025") {
+    if (password === "plaswave2025") { // set your desired password here
       updateStatsDashboard();
       document.getElementById("adminStatsModal").classList.remove("hidden");
     } else {
