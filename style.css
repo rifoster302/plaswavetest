@@ -1,0 +1,307 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+/* I used ChatGPT to help trouble shoot CSS issues. To save on time, I asked AI to help me find specific positioning for objects on the page when I couldn't get them oriented how I wanted. */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #123524; 
+  color: #f4f4f4;
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header */
+header {
+  background-color: #0e2e1e;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  flex-wrap: wrap;
+}
+
+/* Left side: logo + title inline */
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #fff;
+  margin-right: 1rem;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+}
+
+.header-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-left: 0.75rem; 
+}
+
+/* Right side: icon cluster */
+.header-icons {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Badge styling */
+.eligibility-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #fff;
+  border: 2px solid gold;
+  object-fit: cover;
+  box-shadow: 0 0 4px rgba(255, 215, 0, 0.5);
+}
+
+/* Profile button */
+.profile-btn {
+  background-color: #fff;
+  border: 2px solid gold;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 1.1rem;
+  color: #123524;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.profile-btn:hover {
+  transform: scale(1.1);
+  background-color: #f4f4f4;
+}
+
+/* Map container */
+main {
+  flex-grow: 1;
+}
+
+#map {
+  height: min(100vh, 700px); 
+  width: 100%;
+  z-index: 1;
+  filter: brightness(0.85) contrast(1.05);
+}
+
+/* Footer */
+footer {
+  background-color: #0e2e1e;
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #ccc;
+  border-top: 1px solid #1f1f1f;
+}
+
+/* Modals */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(18, 53, 36, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #0e2e1e;
+  color: #f4f4f4;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  max-width: 90%;
+  width: 400px;
+}
+
+.modal-content h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.modal-content p,
+.modal-content label {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.modal-content select {
+  width: 100%;
+  padding: 0.4rem;
+  border-radius: 6px;
+  border: none;
+  margin-top: 0.3rem;
+}
+
+.modal-content button {
+  background-color: #f4f4f4;
+  color: #0e2e1e;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 1rem;
+  width: 100%;
+  transition: background-color 0.2s ease;
+}
+
+.modal-content button:hover {
+  background-color: #d6d6d6;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Leaflet Popups */
+.leaflet-popup-content-wrapper {
+  background-color: #0e2e1e !important;
+  color: #f4f4f4 !important;
+  font-size: 1rem !important;
+  line-height: 1.5 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.5) !important;
+}
+
+.leaflet-popup-content {
+  color: #f4f4f4 !important;
+  font-weight: 500 !important;
+  opacity: 1 !important;
+}
+
+.leaflet-popup-content strong,
+.leaflet-popup-content em,
+.leaflet-popup-content a {
+  color: #f5c518 !important;
+  font-weight: bold !important;
+  text-decoration: none !important;
+}
+
+.leaflet-popup-content a:hover {
+  text-decoration: underline !important;
+  color: #fff176 !important;
+}
+
+.leaflet-popup-tip {
+  background-color: #0e2e1e !important;
+}
+
+/* Notification Button */
+.notification-wrapper {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 1000;
+  width: 48px;
+  height: 48px;
+  background-color: #f5c518;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}
+
+.notification-bell {
+  width: 26px;
+  height: 26px;
+  filter: invert(20%) sepia(96%) saturate(376%) hue-rotate(107deg) brightness(95%) contrast(99%);
+}
+
+.notification-bubble {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background-color: red;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Notification Modal Image */
+#notificationModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#notificationModal img {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+#notificationModal.hidden {
+  display: none;
+}
+
+/* Mobile Optimization */
+/* I used ChatGPT to help me format the mobile interface for PlasWave after a lot of trial and error.*/
+@media (max-width: 600px) {
+  header {
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 0.75rem 1rem;
+  }
+
+  .header-left {
+    flex: 1 1 60%;
+    display: flex;
+    align-items: center;
+  }
+
+  .header-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-left: -0.5rem;
+  }
+
+  .header-icons {
+    flex: 1 1 40%;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 0;
+  }
+
+  .logo {
+    margin-bottom: 0;
+  }
+
+  #map {
+    min-height: 500px;
+  }
+}

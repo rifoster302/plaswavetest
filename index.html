@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PlasWave Beta</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body>
+  <header>
+    <div class="header-left">
+      <img src="assets/PlasWave Logo.png" alt="PlasWave Logo" class="logo">
+      <h1 class="header-title">PlasWave (Beta)</h1>
+    </div>
+    <div class="header-icons">
+      <img src="assets/eligibility-badge.png" alt="Eligible Donor" class="eligibility-badge hidden" id="userStatusBadge">
+      <button id="profileBtn" class="profile-btn">👤</button>
+    </div>
+  </header>
+
+  <main>
+    <div id="map"></div>
+  </main>
+
+  <footer>
+    <p>💡 PlasWave is an independent project, not currently affiliated with any health agency. For official eligibility & health info, visit the center websites.</p>
+  </footer>
+
+  <!-- Modals -->
+  <div id="locationModal" class="modal-overlay">
+    <div class="modal-content">
+      <h2>Allow Location Access</h2>
+      <p>PlasWave uses your location to find nearby donation centers. This helps us show you real-time incentives near you.</p>
+      <button id="allowLocationBtn">Allow Location Access</button>
+    </div>
+  </div>
+
+  <div id="questionnaireModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h2>Quick Eligibility Check</h2>
+      <form id="eligibilityForm">
+        <label>Are you 18 years old, or older?
+          <select required><option value="">--</option><option value="yes">Yes</option><option value="no">No</option></select>
+        </label>
+        <label>Are you over 110lbs?
+          <select required><option value="">--</option><option value="yes">Yes</option><option value="no">No</option></select>
+        </label>
+        <label>Any tattoos or piercings in the last 4 months?
+          <select required><option value="">--</option><option value="no">No</option><option value="yes">Yes</option></select>
+        </label>
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Notification -->
+  <div id="notificationBtn" class="notification-wrapper">
+    <span class="notification-bubble">1</span>
+    <img src="assets/notification-bell.png" alt="Notifications" class="notification-bell">
+  </div>
+
+  <div id="notificationModal" class="hidden">
+    <img src="assets/PlasWave-FAQ1.png" alt="PlasWave FAQS">
+  </div>
+
+  <!-- Admin -->
+  <div id="adminStatsBtn" class="admin-stats-btn hidden">📈</div>
+
+  <div id="adminStatsModal" class="modal-overlay hidden">
+    <div class="modal-content" id="statsContent">
+      <h2>PlasWave Traffic Stats 📊</h2>
+      <p id="visitStats"></p>
+      <p id="pinStats"></p>
+      <p id="urlStats"></p>
+      <button onclick="document.getElementById('adminStatsModal').classList.add('hidden')">Close</button>
+    </div>
+  </div>
+
+  <!-- Scripts (ONLY these two) -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
