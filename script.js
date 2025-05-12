@@ -104,15 +104,22 @@ if (allowLocationBtn) {
 
 // === Open Questionnaire Modal ===
 function openQuestionnaire() {
+  if (localStorage.getItem('plaswave_questionnaireShown') === 'true') {
+    return; // Don't show questionnaire again if it was already shown
+  }
+
   const locationModal = document.getElementById("locationModal");
   if (locationModal && !locationModal.classList.contains('hidden')) {
-    locationModal.classList.add("hidden"); // double lock
+    locationModal.classList.add("hidden");
   }
 
   const qModal = document.getElementById("questionnaireModal");
   if (qModal) {
     qModal.classList.remove("hidden");
   }
+
+  // ✅ Set flag that questionnaire has been shown
+  localStorage.setItem('plaswave_questionnaireShown', 'true');
 }
 
 // === Notification Modal Logic ===
