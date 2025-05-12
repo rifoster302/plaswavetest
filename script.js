@@ -107,12 +107,11 @@ if (allowLocationBtn) {
 
 // === Open Questionnaire Modal ===
 function openQuestionnaire() {
-  // Only allow questionnaire if session started and not already shown
   if (localStorage.getItem('plaswave_sessionStarted') !== 'true') {
-    return; // user never clicked Allow
+    return;
   }
   if (localStorage.getItem('plaswave_questionnaireShown') === 'true') {
-    return; // questionnaire already shown
+    return;
   }
 
   const locationModal = document.getElementById("locationModal");
@@ -125,8 +124,28 @@ function openQuestionnaire() {
     qModal.classList.remove("hidden");
   }
 
-  // ✅ Mark questionnaire as shown
   localStorage.setItem('plaswave_questionnaireShown', 'true');
+}
+
+// === ✅ Eligibility Form Logic (no location re-request) ===
+const eligibilityForm = document.getElementById("eligibilityForm");
+
+if (eligibilityForm) {
+  eligibilityForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const selects = e.target.querySelectorAll("select");
+    const answers = Array.from(selects).map(sel => sel.value);
+
+    if (answers[0] === "yes" && answers[1] === "yes" && answers[2] === "no") {
+      alert("Great! You're likely eligible to donate. Let's find you a center.");
+    } else {
+      alert("You may not currently be eligible to donate plasma. Please check with a donation center for full guidelines.");
+    }
+
+    document.getElementById("questionnaireModal").classList.add("hidden");
+
+    // ✅ No geolocation request here. Simply closes questionnaire.
+  });
 }
 
 // === Notification Modal Logic ===
@@ -177,12 +196,13 @@ function trackUrlClick() {
   }
 }
 
-// === 🚀 Secret Admin Activation (Ctrl+Alt+P) ===
+// === 🚀 Secret Admin Activation (Ctrl+Alt+P) ✅ Updated ===
 document.addEventListener("keydown", (e) => {
   if (e.ctrlKey && e.altKey && e.key.toLowerCase() === "p") {
     const adminBtn = document.getElementById("adminStatsBtn");
     if (adminBtn) {
       adminBtn.classList.remove("hidden");
+      adminBtn.style.display = 'block'; // ✅ Force visible
       alert("Admin Mode Activated! 📈");
     }
   }
