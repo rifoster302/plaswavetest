@@ -66,7 +66,10 @@ const allowLocationBtn = document.getElementById("allowLocationBtn");
 if (allowLocationBtn) {
   allowLocationBtn.addEventListener("click", () => {
     const locationModal = document.getElementById("locationModal");
-    locationModal.classList.add("hidden"); // Always close location modal immediately
+    locationModal.classList.add("hidden");
+
+    // ✅ Mark that the user has started a session
+    localStorage.setItem('plaswave_sessionStarted', 'true');
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -104,8 +107,12 @@ if (allowLocationBtn) {
 
 // === Open Questionnaire Modal ===
 function openQuestionnaire() {
+  // Only allow questionnaire if session started and not already shown
+  if (localStorage.getItem('plaswave_sessionStarted') !== 'true') {
+    return; // user never clicked Allow
+  }
   if (localStorage.getItem('plaswave_questionnaireShown') === 'true') {
-    return; // Don't show questionnaire again if it was already shown
+    return; // questionnaire already shown
   }
 
   const locationModal = document.getElementById("locationModal");
@@ -118,7 +125,7 @@ function openQuestionnaire() {
     qModal.classList.remove("hidden");
   }
 
-  // ✅ Set flag that questionnaire has been shown
+  // ✅ Mark questionnaire as shown
   localStorage.setItem('plaswave_questionnaireShown', 'true');
 }
 
