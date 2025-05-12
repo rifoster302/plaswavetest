@@ -76,13 +76,25 @@ function renderCenters(data, minIncentive = 0) {
 
     if (incentiveAmount >= minIncentive) {
       const marker = L.marker([center.lat, center.lon], { icon: customGreenPin }).addTo(map);
-      marker.bindPopup(`
+      
+      const popupContent = document.createElement('div'); // 🛠 create popup as element
+      popupContent.innerHTML = `
         <strong>${center.name}</strong><br/>
         ${center.address}<br/>
         <em>${center.incentive}</em><br/>
-        <a href="${center.signup}" target="_blank" onclick="trackUrlClick()">Sign Up</a>
-      `);
+        <a href="${center.signup}" target="_blank">Sign Up</a> <!-- no onclick here -->
+      `;
+
+      marker.bindPopup(popupContent);
       marker.on('click', trackPinClick);
+
+      // 🛠 Add event listener for URL clicks INSIDE popup
+      popupContent.addEventListener('click', (e) => {
+        if (e.target.tagName === 'A') {
+          trackUrlClick();
+        }
+      });
+
       centerMarkers.push(marker);
     }
   });
@@ -118,7 +130,7 @@ modal.addEventListener("click", () => {
   modal.classList.add("hidden");
 });
 
-// === 🚀 Site Visit Tracking ===
+// === 🚀 Site Visit Tracking (local storage) ===
 if (!localStorage.getItem('plaswave_firstVisit')) {
   localStorage.setItem('plaswave_firstVisit', Date.now());
 }
@@ -130,36 +142,31 @@ if (localStorage.getItem('plaswave_visits')) {
 
 // === 🚀 Pin and URL Tracking Functions (with Umami) ===
 function trackPinClick() {
-  // Update local tracking
   if (localStorage.getItem('plaswave_pinClicks')) {
     localStorage.setItem('plaswave_pinClicks', Number(localStorage.getItem('plaswave_pinClicks')) + 1);
   } else {
     localStorage.setItem('plaswave_pinClicks', 1);
   }
 
-  // Send to Umami
   if (typeof umami !== "undefined") {
     umami.track("Pin Click");
   }
 }
 
 function trackUrlClick() {
-  // Update local tracking
   if (localStorage.getItem('plaswave_urlClicks')) {
     localStorage.setItem('plaswave_urlClicks', Number(localStorage.getItem('plaswave_urlClicks')) + 1);
   } else {
     localStorage.setItem('plaswave_urlClicks', 1);
   }
 
-  // Send to Umami
   if (typeof umami !== "undefined") {
     umami.track("Sign Up URL Click");
   }
 }
 
-// === 🚀 Secret Admin Activation ===
+// === 🚀 Secret Admin Activation (optional: could remove) ===
 document.addEventListener("keydown", (e) => {
-  console.log(`Key pressed: ${e.key}, ctrl: ${e.ctrlKey}, alt: ${e.altKey}`);
   if (e.ctrlKey && e.altKey && e.key.toLowerCase() === "p") {
     const adminBtn = document.getElementById("adminStatsBtn");
     if (adminBtn) {
