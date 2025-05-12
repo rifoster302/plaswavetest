@@ -4,10 +4,6 @@
   <meta charset="UTF-8" />
   <title>PlasWave Beta</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Umami Tracking Script -->
-  <script defer src="https://umami-production-090f.up.railway.app/script.js" data-website-id="6bc87130-4495-4f97-b20b-a293360c13bb"></script>
-
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
@@ -35,28 +31,10 @@
   <!-- Location Modal -->
   <div id="locationModal" class="modal-overlay">
     <div class="modal-content">
-      <h2>Allow Location Access</h2>
-      <p>PlasWave uses your location to find nearby donation centers. This helps us show you real-time incentives near you.</p>
+      <h2> Allow Location Access</h2>
+      <p>PlasWave uses your location to find nearby donation centers. This helps us show you real-time incentives near you. If you prefer, you can also just scroll the map freely.</p>
       <button id="allowLocationBtn">Allow Location Access</button>
-    </div>
-  </div>
-
-  <!-- Questionnaire Modal -->
-  <div id="questionnaireModal" class="modal-overlay hidden">
-    <div class="modal-content">
-      <h2>Quick Eligibility Check</h2>
-      <form id="eligibilityForm">
-        <label>Are you 18 years old, or older?
-          <select required><option value="">--</option><option value="yes">Yes</option><option value="no">No</option></select>
-        </label>
-        <label>Are you over 110lbs?
-          <select required><option value="">--</option><option value="yes">Yes</option><option value="no">No</option></select>
-        </label>
-        <label>Any tattoos or piercings in the last 4 months?
-          <select required><option value="">--</option><option value="no">No</option><option value="yes">Yes</option></select>
-        </label>
-        <button type="submit">Submit</button>
-      </form>
+      <button id="denyLocationBtn">No, thanks</button> <!-- 🛠 Added cleanly -->
     </div>
   </div>
 
@@ -68,107 +46,11 @@
 
   <!-- Notification Modal -->
   <div id="notificationModal" class="hidden">
-    <img src="assets/PlasWave-FAQ1.png" alt="PlasWave FAQS" />
+    <img src="assets/PlasWave-FAQ1.png" alt="PlasWave FAQs" />
   </div>
 
-  <!-- Admin Stats Button (initially hidden) -->
-  <div id="adminStatsBtn" class="admin-stats-btn hidden">📈</div>
-
-  <!-- Admin Stats Modal -->
-  <div id="adminStatsModal" class="modal-overlay hidden">
-    <div class="modal-content" id="statsContent">
-      <h2>PlasWave Traffic Stats 📊</h2>
-      <p id="visitStats"></p>
-      <p id="pinStats"></p>
-      <p id="urlStats"></p>
-      <button onclick="document.getElementById('adminStatsModal').classList.add('hidden')">Close</button>
-    </div>
-  </div>
-
-  <!-- Core Scripts -->
+  <!-- Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="script.js"></script>
-
-  <!-- Quick Interactive Setup -->
-  <script>
-    // Location permission
-    document.getElementById("allowLocationBtn").addEventListener("click", () => {
-      document.getElementById("locationModal").classList.add("hidden");
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          position => {
-            const userLat = position.coords.latitude;
-            const userLon = position.coords.longitude;
-            map.setView([userLat, userLon], 12);
-            L.circleMarker([userLat, userLon], {
-              radius: 6,
-              fillColor: "#f4f4f4",
-              color: "#0e2e1e",
-              weight: 2,
-              fillOpacity: 0.9
-            }).addTo(map).bindPopup("📍 You are here");
-          },
-          err => console.warn("Geolocation failed")
-        );
-      }
-      document.getElementById("questionnaireModal").classList.remove("hidden");
-    });
-
-    // Eligibility logic
-    document.getElementById("eligibilityForm").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const selects = e.target.querySelectorAll("select");
-      const answers = Array.from(selects).map(sel => sel.value);
-      if (answers[0] === "yes" && answers[1] === "yes" && answers[2] === "no") {
-        alert("Great! You're likely eligible to donate. Let's find you a center.");
-        document.getElementById("questionnaireModal").classList.add("hidden");
-        document.getElementById("userStatusBadge").classList.remove("hidden");
-      } else {
-        alert("You may not currently be eligible to donate plasma. Please check with a donation center for full guidelines.");
-      }
-    });
-
-    // Notification popup logic
-    const notifBtn = document.getElementById("notificationBtn");
-    const notifModal = document.getElementById("notificationModal");
-    const notifBubble = document.querySelector(".notification-bubble");
-
-    notifBtn.addEventListener("click", () => {
-      notifModal.classList.remove("hidden");
-      notifBubble.style.display = "none";
-    });
-
-    notifModal.addEventListener("click", () => {
-      notifModal.classList.add("hidden");
-    });
-
-    // Admin Stats Logic
-
-    document.addEventListener("keydown", (e) => {
-      if (e.ctrlKey && e.altKey && e.key === "p") {
-        document.getElementById("adminStatsBtn").classList.remove("hidden");
-      }
-    });
-
-    document.getElementById("adminStatsBtn").addEventListener("click", () => {
-      const password = prompt("Enter admin password:");
-      if (password === "plaswave2025") {
-        updateStatsDashboard();
-        document.getElementById("adminStatsModal").classList.remove("hidden");
-      } else {
-        alert("Incorrect password.");
-      }
-    });
-
-    function updateStatsDashboard() {
-      const visits = localStorage.getItem('plaswave_visits') || 0;
-      const pins = localStorage.getItem('plaswave_pinClicks') || 0;
-      const urls = localStorage.getItem('plaswave_urlClicks') || 0;
-
-      document.getElementById('visitStats').innerHTML = `Total Site Visits: <strong>${visits}</strong>`;
-      document.getElementById('pinStats').innerHTML = `Total Pin Clicks: <strong>${pins}</strong>`;
-      document.getElementById('urlStats').innerHTML = `Total Sign-Up URL Clicks: <strong>${urls}</strong>`;
-    }
-  </script>
 </body>
 </html>
