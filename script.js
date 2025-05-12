@@ -55,17 +55,6 @@ if (allowLocationBtn) {
   });
 }
 
-// === Optional IP fallback (commented out to avoid 403 error unless token provided) ===
-// fetch("https://ipinfo.io/json?token=YOUR_TOKEN_HERE")
-//   .then(res => res.json())
-//   .then(location => {
-//     const [lat, lon] = location.loc.split(',');
-//     map.setView([parseFloat(lat), parseFloat(lon)], 11);
-//   })
-//   .catch(() => {
-//     console.warn("IP geolocation failed, using DC default.");
-//   });
-
 // === Load Center Data ===
 fetch("dmv_plasma_centers.json")
   .then(response => response.json())
@@ -93,7 +82,7 @@ function renderCenters(data, minIncentive = 0) {
         <em>${center.incentive}</em><br/>
         <a href="${center.signup}" target="_blank" onclick="trackUrlClick()">Sign Up</a>
       `);
-      marker.on('click', trackPinClick); // track pin clicks
+      marker.on('click', trackPinClick);
       centerMarkers.push(marker);
     }
   });
@@ -139,24 +128,36 @@ if (localStorage.getItem('plaswave_visits')) {
   localStorage.setItem('plaswave_visits', 1);
 }
 
-// === 🚀 Pin and URL Tracking Functions ===
+// === 🚀 Pin and URL Tracking Functions (with Umami) ===
 function trackPinClick() {
+  // Update local tracking
   if (localStorage.getItem('plaswave_pinClicks')) {
     localStorage.setItem('plaswave_pinClicks', Number(localStorage.getItem('plaswave_pinClicks')) + 1);
   } else {
     localStorage.setItem('plaswave_pinClicks', 1);
   }
+
+  // Send to Umami
+  if (typeof umami !== "undefined") {
+    umami.track("Pin Click");
+  }
 }
 
 function trackUrlClick() {
+  // Update local tracking
   if (localStorage.getItem('plaswave_urlClicks')) {
     localStorage.setItem('plaswave_urlClicks', Number(localStorage.getItem('plaswave_urlClicks')) + 1);
   } else {
     localStorage.setItem('plaswave_urlClicks', 1);
   }
+
+  // Send to Umami
+  if (typeof umami !== "undefined") {
+    umami.track("Sign Up URL Click");
+  }
 }
 
-// === 🚀 Secret Admin Activation (Fixed) ===
+// === 🚀 Secret Admin Activation ===
 document.addEventListener("keydown", (e) => {
   console.log(`Key pressed: ${e.key}, ctrl: ${e.ctrlKey}, alt: ${e.altKey}`);
   if (e.ctrlKey && e.altKey && e.key.toLowerCase() === "p") {
@@ -173,7 +174,7 @@ const adminStatsBtn = document.getElementById("adminStatsBtn");
 if (adminStatsBtn) {
   adminStatsBtn.addEventListener("click", () => {
     const password = prompt("Enter admin password:");
-    if (password === "plaswave2025") { // set your desired password here
+    if (password === "plaswave2025") {
       updateStatsDashboard();
       document.getElementById("adminStatsModal").classList.remove("hidden");
     } else {
