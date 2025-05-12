@@ -169,7 +169,9 @@ footer {
 }
 
 .hidden {
-  display: none !important;
+  display: none;
+  visibility: hidden;
+  opacity: 0;
 }
 
 /* Leaflet Popups */

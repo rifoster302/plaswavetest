@@ -2,6 +2,7 @@ let plasmaData = [];
 let centerMarkers = [];
 
 // === Initialize Leaflet map ===
+console.log("Initializing map...");
 const map = L.map('map').setView([38.89511, -77.03637], 11);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -22,6 +23,7 @@ const customGreenPin = L.icon({
 fetch("dmv_plasma_centers.json")
   .then(response => response.json())
   .then(data => {
+    console.log("Center data loaded.");
     plasmaData = data;
     renderCenters(plasmaData);
   })
@@ -65,15 +67,16 @@ const allowLocationBtn = document.getElementById("allowLocationBtn");
 
 if (allowLocationBtn) {
   allowLocationBtn.addEventListener("click", () => {
+    console.log("Location button clicked");
     const locationModal = document.getElementById("locationModal");
     locationModal.classList.add("hidden");
 
-    // ✅ Mark that the user has started a session
     localStorage.setItem('plaswave_sessionStarted', 'true');
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         position => {
+          console.log("Location success");
           const userLat = position.coords.latitude;
           const userLon = position.coords.longitude;
           map.setView([userLat, userLon], 13);
@@ -92,7 +95,7 @@ if (allowLocationBtn) {
           openQuestionnaire();
         },
         error => {
-          console.warn("Geolocation failed:", error);
+          console.warn("Location failed", error);
           alert("We couldn't access your location. You can still browse centers manually!");
           openQuestionnaire();
         },
@@ -107,10 +110,14 @@ if (allowLocationBtn) {
 
 // === Open Questionnaire Modal ===
 function openQuestionnaire() {
+  console.log("Attempting to open questionnaire...");
+
   if (localStorage.getItem('plaswave_sessionStarted') !== 'true') {
+    console.log("Session not started - blocking questionnaire.");
     return;
   }
   if (localStorage.getItem('plaswave_questionnaireShown') === 'true') {
+    console.log("Questionnaire already shown - blocking.");
     return;
   }
 
@@ -122,17 +129,20 @@ function openQuestionnaire() {
   const qModal = document.getElementById("questionnaireModal");
   if (qModal) {
     qModal.classList.remove("hidden");
+    console.log("Questionnaire shown.");
   }
 
   localStorage.setItem('plaswave_questionnaireShown', 'true');
 }
 
-// === ✅ Eligibility Form Logic (no location re-request) ===
+// === Eligibility Form ===
 const eligibilityForm = document.getElementById("eligibilityForm");
 
 if (eligibilityForm) {
   eligibilityForm.addEventListener("submit", (e) => {
     e.preventDefault();
+    console.log("Eligibility form submitted.");
+
     const selects = e.target.querySelectorAll("select");
     const answers = Array.from(selects).map(sel => sel.value);
 
@@ -143,8 +153,6 @@ if (eligibilityForm) {
     }
 
     document.getElementById("questionnaireModal").classList.add("hidden");
-
-    // ✅ No geolocation request here. Simply closes questionnaire.
   });
 }
 
@@ -202,7 +210,10 @@ document.addEventListener("keydown", (e) => {
     const adminBtn = document.getElementById("adminStatsBtn");
     if (adminBtn) {
       adminBtn.classList.remove("hidden");
-      adminBtn.style.display = 'block'; // ✅ Force visible
+      adminBtn.style.display = 'block';
+      adminBtn.style.visibility = 'visible';
+      adminBtn.style.opacity = '1';
+      console.log("Admin Mode Activated! 📈");
       alert("Admin Mode Activated! 📈");
     }
   }
